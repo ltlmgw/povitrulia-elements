@@ -3,56 +3,338 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Download Page as Image or PDF</title>
+    <title>Обовʼязкові елементи | Повітруля</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  </head>
-  <body class="container py-5">
-    <h2 class="mb-4">Select Options</h2>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <div class="mb-3">
-      <label class="form-label">Choose an option:</label>
-      <select class="form-select">
-        <option value="img1">Option 1</option>
-        <option value="img2">Option 2</option>
-        <option value="img3">Option 3</option>
-      </select>
-      <img
-        id="selectedImage"
-        src="https://via.placeholder.com/150"
-        class="mt-3 d-block"
-        alt="Selected"
-      />
+    <!-- Choices.js -->
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+    />
+  </head>
+  <body class="container-fluid py-5">
+    <h2 class="mb-4 text-center">Обовʼязкові елементи</h2>
+
+    <div class="container-fluid" id="selects-container">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="mb-3">
+            <label class="form-label">Виберіть дисципліну:</label>
+            <select class="form-select" id="discipline">
+              <option value="pole">Pole Sport</option>
+              <option value="loop">Loop Sport</option>
+              <option value="silks">Aerial Silks Sport</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Виберіть категорію:</label>
+            <select class="form-select" id="category">
+              <option value="debut">Дебют</option>
+              <option value="amatour">Аматор</option>
+              <option value="semipro">Напівпрофесіонал</option>
+              <option value="pro">Професіонал</option>
+              <option value="elit">Еліт</option>
+            </select>
+          </div>
+
+          <label for="multiSelect">Порядок елементів:</label>
+          <select id="multiSelect" multiple class="form-control"></select>
+
+          <div class="text-center">
+            <button
+              id="getValues"
+              class="btn btn-primary mt-3 mx-auto"
+              onclick="updateSecondarySelect()"
+            >
+              Показати вибір елементів
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="col-sm-6"
+          id="secondarySelectContainer"
+          style="display: none"
+        >
+          <div class="mb-3">
+            <div id="selects"></div>
+          </div>
+          <div class="text-center">
+            <button
+              id="getValues"
+              class="btn btn-primary mt-3 mx-auto"
+              onclick="showSelectedElements()"
+            >
+              Завантажити вибрані елементи
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <button class="btn btn-primary" onclick="downloadAsImage()">
-      Download as Image
-    </button>
-    <button class="btn btn-secondary" onclick="downloadAsPDF()">
-      Download as PDF
-    </button>
+    <div class="container" id="images-container" style="display: none">
+      <div class="col-sm-12">
+        <div id="images"></div>
+
+        <div class="text-center">
+          <button
+            class="mt-3 btn btn-primary download-btn mx-auto"
+            onclick="downloadAsImage()"
+          >
+            Завантажити як картинку
+          </button>
+          <button
+            class="mt-3 btn btn-secondary download-btn mx-auto"
+            onclick="downloadAsPDF()"
+          >
+            Завантажити PDF
+          </button>
+        </div>
+
+        <div class="text-center">
+          <button
+            class="mt-3 btn btn-primary download-btn mx-auto"
+            onclick="backToSelection()"
+          >
+            Повернутись до вибору
+          </button>
+        </div>
+      </div>
+    </div>
 
     <script>
-      function downloadAsImage() {
-          html2canvas(document.body).then(canvas => {
-              let link = document.createElement('a');
-              link.href = canvas.toDataURL("image/png");
-              link.download = 'page_screenshot.png';
-              link.click();
+      const cat = {
+        debut: "Д",
+        amatour: "А",
+        semipro: "Н",
+        pro: "П",
+        elit: "Е",
+      };
+      const opt = {
+        g: "Г",
+        s: "С",
+        k: "К",
+        st: "Ст",
+        d: "Д",
+        // b: "Б",
+      };
+      const opt_n = {
+        g: "Гнучкість",
+        s: "Сила",
+        k: "Крутка",
+        st: "Стійка",
+        d: "Динамічна комбінація",
+        // b: "Баланс",
+      };
+
+      const multiSelectElement = document.getElementById("multiSelect");
+
+      Object.entries(opt_n).forEach(([key, value]) => {
+        let newOption = new Option(value, key);
+        multiSelectElement.add(newOption);
+      });
+
+      const multiSelect = new Choices(multiSelectElement, {
+        removeItemButton: true,
+        placeholder: true,
+        searchEnabled: true,
+      });
+
+      function updateSecondarySelect() {
+        const orderValue = multiSelect.getValue(true);
+
+        const disciplineSelect = document.getElementById("discipline");
+        const categorySelect = document.getElementById("category");
+
+        const secondarySelectContainer = document.getElementById(
+          "secondarySelectContainer"
+        );
+
+        secondarySelectContainer.style.display = "block";
+
+        const discipline = disciplineSelect.value;
+        const category = categorySelect.value;
+
+        const opt_arr = Object.keys(opt).map((k) => {
+          const arr = [1, 2, 3].map((o) => cat[category] + opt[k] + o);
+          return { k, arr, name: opt_n[k] };
+        });
+
+        const selectsContainer = document.getElementById("selects");
+        selectsContainer.innerHTML = "";
+
+        orderValue.forEach((e) => {
+          const currentSel = opt_arr.find((el) => el.k === e);
+
+          const div = document.createElement("div");
+          div.classList = "div-select";
+
+          const label = document.createElement("label");
+          label.classList = "form-label mt-3";
+          label.textContent = currentSel.name;
+
+          const select = document.createElement("select");
+          select.id = currentSel.k + "element";
+          select.classList = "form-select";
+
+          const imageCont = document.createElement("div");
+          imageCont.style.textAlign = "center";
+          imageCont.style.marginTop = "20px";
+
+          let imgInfo;
+
+          currentSel.arr.forEach((opt) => {
+            const option = document.createElement("option");
+            option.textContent = opt;
+            select.appendChild(option);
+
+            const code = document.createElement("p");
+            code.style.fontWeight = "600";
+            code.textContent = opt;
+
+            const imgInfo = document.createElement("div");
+            imgInfo.style.display = "inline-block";
+
+            const image = document.createElement("img");
+            image.src = `img/${discipline}/${opt}.jpeg`;
+            image.style.width = "150px";
+            image.style.height = "auto";
+
+            imgInfo.appendChild(code);
+            imgInfo.appendChild(image);
+            imageCont.appendChild(imgInfo);
           });
+
+          div.appendChild(label);
+          div.appendChild(select);
+          div.appendChild(imageCont);
+
+          selectsContainer.appendChild(div);
+        });
+      }
+
+      function showSelectedElements() {
+        const selectsContainer = document.getElementById("selects-container");
+        selectsContainer.style.display = "none";
+
+        const imagesContainer = document.getElementById("images-container");
+        imagesContainer.style.display = "block";
+
+        const images = imagesContainer.querySelector("#images");
+        images.innerHTML = "";
+
+        const selects = document.querySelectorAll("#selects .div-select");
+        const discipline = document.getElementById("discipline").value;
+
+        [...selects].map((e, index) => {
+          const label = e.querySelector("label").innerText;
+          const select = e.querySelector("select").value;
+
+          const cont = document.createElement("div");
+          cont.style.marginTop = "20px";
+          cont.classList =
+            "d-flex justify-content-between align-items-center mt-4";
+
+          const heading = document.createElement("h3");
+          heading.innerText = `${index + 1}. ${label}:`;
+
+          const contIm = document.createElement("div");
+          contIm.style.textAlign = "center";
+          contIm.style.fontWeight = "500";
+
+          const p = document.createElement("p");
+          p.innerText = `Код - ${select}`;
+
+          const image = document.createElement("img");
+          image.src = `img/${discipline}/${select}.jpeg`;
+          image.style.width = "150px";
+          image.style.height = "auto";
+
+          images.appendChild(cont);
+          cont.appendChild(heading);
+          cont.appendChild(contIm);
+
+          contIm.appendChild(p);
+          contIm.appendChild(image);
+        });
+      }
+
+      function backToSelection() {
+        const selectsContainer = document.getElementById("selects-container");
+        selectsContainer.style.display = "block";
+
+        const imagesContainer = document.getElementById("images-container");
+        imagesContainer.style.display = "none";
+      }
+
+      function hideButtons() {
+        document
+          .querySelectorAll(".download-btn")
+          .forEach((btn) => (btn.style.display = "none"));
+      }
+
+      function showButtons() {
+        document
+          .querySelectorAll(".download-btn")
+          .forEach((btn) => (btn.style.display = "inline-block"));
+      }
+
+      function downloadAsImage() {
+        hideButtons();
+        html2canvas(document.body, { useCORS: true }).then((canvas) => {
+          showButtons();
+          let link = document.createElement("a");
+          link.href = canvas.toDataURL("image/png");
+          link.download = "page_screenshot.png";
+          link.click();
+        });
       }
 
       function downloadAsPDF() {
-          const {{ jsPDF }} = window.jspdf;
-          html2canvas(document.body).then(canvas => {
-              let pdf = new jsPDF();
-              pdf.addImage(canvas.toDataURL("image/png"), 'PNG', 10, 10, 190, 0);
-              pdf.save('page_screenshot.pdf');
+        hideButtons();
+
+        // Wait for all images to load before continuing
+        const images = document.querySelectorAll("img");
+        let loadedImagesCount = 0;
+
+        images.forEach((img) => {
+          if (img.complete) {
+            loadedImagesCount++;
+          } else {
+            img.onload = () => {
+              loadedImagesCount++;
+              if (loadedImagesCount === images.length) {
+                captureAndGeneratePDF();
+              }
+            };
+          }
+        });
+
+        if (loadedImagesCount === images.length) {
+          captureAndGeneratePDF();
+        }
+
+        function captureAndGeneratePDF() {
+          const { jsPDF } = window.jspdf;
+          html2canvas(document.body).then((canvas) => {
+            showButtons();
+            let pdf = new jsPDF();
+            pdf.addImage(canvas.toDataURL("image/png"), "PNG", 10, 10, 190, 0);
+            pdf.save("page_screenshot.pdf");
           });
+        }
       }
     </script>
   </body>
