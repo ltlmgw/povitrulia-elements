@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Обовʼязкові елементи | Повітруля</title>
+    <title>Обов&#697;язкові елементи | Повітруля</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -22,16 +22,29 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
     />
+    <style>
+      .choices__list--multiple .choices__item {
+        background-color: #18336dcf;
+      }
+    </style>
   </head>
   <body class="container-fluid py-5">
-    <h2 class="mb-4 text-center">Обовʼязкові елементи</h2>
+    <div class="container" id="selects-container">
+      <h2 class="mb-4 text-center">Обов&#697;язкові елементи</h2>
 
-    <div class="container-fluid" id="selects-container">
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-12">
+          <div class="mb-3">
+            <label class="form-label">Введіть ім&#697;я:</label>
+            <input class="input-group-text w-100" type="text" id="name" />
+          </div>
           <div class="mb-3">
             <label class="form-label">Виберіть дисципліну:</label>
-            <select class="form-select" id="discipline">
+            <select
+              class="form-select"
+              id="discipline"
+              onchange="onDisChange()"
+            >
               <option value="pole">Pole Sport</option>
               <option value="loop">Loop Sport</option>
               <option value="silks">Aerial Silks Sport</option>
@@ -40,7 +53,7 @@
 
           <div class="mb-3">
             <label class="form-label">Виберіть категорію:</label>
-            <select class="form-select" id="category">
+            <select class="form-select" id="category" onchange="onDisChange()">
               <option value="debut">Дебют</option>
               <option value="amatour">Аматор</option>
               <option value="semipro">Напівпрофесіонал</option>
@@ -64,7 +77,7 @@
         </div>
 
         <div
-          class="col-sm-6"
+          class="col-sm-12"
           id="secondarySelectContainer"
           style="display: none"
         >
@@ -96,7 +109,7 @@
             Завантажити як картинку
           </button>
           <button
-            class="mt-3 btn btn-secondary download-btn mx-auto"
+            class="mt-3 btn btn-primary download-btn mx-auto"
             onclick="downloadAsPDF()"
           >
             Завантажити PDF
@@ -105,16 +118,23 @@
 
         <div class="text-center">
           <button
-            class="mt-3 btn btn-primary download-btn mx-auto"
+            class="mt-3 btn btn-dark download-btn mx-auto"
             onclick="backToSelection()"
           >
-            Повернутись до вибору
+            Повернутися до вибору
           </button>
         </div>
       </div>
     </div>
 
     <script>
+      const disciplineSelect = document.getElementById("discipline");
+      const categorySelect = document.getElementById("category");
+      const selectsContainer = document.getElementById("selects");
+
+      let discipline = disciplineSelect.value;
+      let category = categorySelect.value;
+
       const cat = {
         debut: "Д",
         amatour: "А",
@@ -122,29 +142,56 @@
         pro: "П",
         elit: "Е",
       };
-      const opt = {
+      const opt_pole = {
         g: "Г",
         s: "С",
         k: "К",
         st: "Ст",
         d: "Д",
-        // b: "Б",
       };
-      const opt_n = {
+      const opt_not_pole = {
+        g: "Г",
+        s: "С",
+        b: "Б",
+        d: "Д",
+      };
+      const opt_n_pole = {
         g: "Гнучкість",
         s: "Сила",
         k: "Крутка",
         st: "Стійка",
         d: "Динамічна комбінація",
-        // b: "Баланс",
+      };
+      const opt_n_note_pole = {
+        g: "Гнучкість",
+        s: "Сила",
+        b: "Баланс",
+        d: "Динамічна комбінація",
       };
 
-      const multiSelectElement = document.getElementById("multiSelect");
+      const prop = {
+        pole: opt_pole,
+        loop: opt_not_pole,
+        silks: opt_not_pole,
+      };
 
-      Object.entries(opt_n).forEach(([key, value]) => {
-        let newOption = new Option(value, key);
-        multiSelectElement.add(newOption);
-      });
+      const prop_l = {
+        pole: opt_n_pole,
+        loop: opt_n_note_pole,
+        silks: opt_n_note_pole,
+      };
+
+      const num = {
+        pole: [1, 2, 3],
+        loop: [1, 2, 3],
+        silks: [1, 2],
+      };
+
+      let opt = prop[discipline];
+      let opt_n = prop_l[discipline];
+      let opt_num = num[discipline];
+
+      const multiSelectElement = document.getElementById("multiSelect");
 
       const multiSelect = new Choices(multiSelectElement, {
         removeItemButton: true,
@@ -152,122 +199,170 @@
         searchEnabled: true,
       });
 
-      function updateSecondarySelect() {
-        const orderValue = multiSelect.getValue(true);
+      function onDisChange() {
+        multiSelect.removeActiveItems();
+        selectsContainer.innerHTML = "";
+      }
 
-        const disciplineSelect = document.getElementById("discipline");
-        const categorySelect = document.getElementById("category");
+      function updateMultiSelect() {
+        discipline = disciplineSelect.value;
+        category = categorySelect.value;
+        opt = prop[discipline];
+        opt_n = prop_l[discipline];
+        opt_num = num[discipline];
 
-        const secondarySelectContainer = document.getElementById(
-          "secondarySelectContainer"
-        );
+        const choicesArray = Object.entries(opt_n).map(([key, value]) => ({
+          value: key,
+          label: value,
+        }));
 
-        secondarySelectContainer.style.display = "block";
+        multiSelect.clearChoices();
+        multiSelect.setChoices(choicesArray, "value", "label", true);
+      }
 
-        const discipline = disciplineSelect.value;
-        const category = categorySelect.value;
+      disciplineSelect.addEventListener("change", updateMultiSelect);
+      updateMultiSelect();
 
-        const opt_arr = Object.keys(opt).map((k) => {
-          const arr = [1, 2, 3].map((o) => cat[category] + opt[k] + o);
-          return { k, arr, name: opt_n[k] };
+      function toggleVisibility(elementId, isVisible) {
+        document.getElementById(elementId).style.display = isVisible
+          ? "block"
+          : "none";
+      }
+
+      function createElementWithProps(tag, props = {}, text = "") {
+        const element = document.createElement(tag);
+        Object.assign(element, props);
+        if (text) element.innerText = text;
+        return element;
+      }
+
+      function appendChildren(parent, ...children) {
+        children.forEach((child) => parent.appendChild(child));
+      }
+
+      function createSelectElement(id, options) {
+        const select = createElementWithProps("select", {
+          id,
+          classList: "form-select",
+        });
+        options.forEach((opt) => {
+          const option = createElementWithProps("option", {}, opt);
+          select.appendChild(option);
+        });
+        return select;
+      }
+
+      function createImageContainer(discipline, options) {
+        const container = createElementWithProps("div", {
+          style: "text-align: center; margin-top: 20px",
         });
 
-        const selectsContainer = document.getElementById("selects");
+        options.forEach((opt) => {
+          const imgInfo = createElementWithProps("div", {
+            style: "display: inline-block",
+          });
+          const code = createElementWithProps(
+            "p",
+            { style: "font-weight: 600" },
+            opt
+          );
+          const image = createElementWithProps("img", {
+            src: `img/${discipline}/${opt}.jpeg`,
+            style: "width: 150px; height: auto",
+          });
+
+          appendChildren(imgInfo, code, image);
+          container.appendChild(imgInfo);
+        });
+
+        return container;
+      }
+
+      function updateSecondarySelect() {
+        category = categorySelect.value;
+        toggleVisibility("secondarySelectContainer", true);
         selectsContainer.innerHTML = "";
+
+        const orderValue = multiSelect.getValue(true);
+        const opt_arr = Object.keys(opt).map((k) => ({
+          k,
+          arr: opt_num.map((o) => cat[category] + opt[k] + o),
+          name: opt_n[k],
+        }));
+
+        console.log(opt_arr, "opt_arr");
 
         orderValue.forEach((e) => {
           const currentSel = opt_arr.find((el) => el.k === e);
+          if (!currentSel) return;
 
-          const div = document.createElement("div");
-          div.classList = "div-select";
-
-          const label = document.createElement("label");
-          label.classList = "form-label mt-3";
-          label.textContent = currentSel.name;
-
-          const select = document.createElement("select");
-          select.id = currentSel.k + "element";
-          select.classList = "form-select";
-
-          const imageCont = document.createElement("div");
-          imageCont.style.textAlign = "center";
-          imageCont.style.marginTop = "20px";
-
-          let imgInfo;
-
-          currentSel.arr.forEach((opt) => {
-            const option = document.createElement("option");
-            option.textContent = opt;
-            select.appendChild(option);
-
-            const code = document.createElement("p");
-            code.style.fontWeight = "600";
-            code.textContent = opt;
-
-            const imgInfo = document.createElement("div");
-            imgInfo.style.display = "inline-block";
-
-            const image = document.createElement("img");
-            image.src = `img/${discipline}/${opt}.jpeg`;
-            image.style.width = "150px";
-            image.style.height = "auto";
-
-            imgInfo.appendChild(code);
-            imgInfo.appendChild(image);
-            imageCont.appendChild(imgInfo);
+          const div = createElementWithProps("div", {
+            classList: "div-select",
           });
+          const label = createElementWithProps(
+            "label",
+            { classList: "form-label mt-3" },
+            currentSel.name
+          );
+          const select = createSelectElement(
+            `${currentSel.k}element`,
+            currentSel.arr
+          );
+          const imageCont = createImageContainer(discipline, currentSel.arr);
 
-          div.appendChild(label);
-          div.appendChild(select);
-          div.appendChild(imageCont);
-
+          appendChildren(div, label, select, imageCont);
           selectsContainer.appendChild(div);
         });
       }
 
       function showSelectedElements() {
-        const selectsContainer = document.getElementById("selects-container");
-        selectsContainer.style.display = "none";
+        toggleVisibility("selects-container", false);
+        toggleVisibility("images-container", true);
 
-        const imagesContainer = document.getElementById("images-container");
-        imagesContainer.style.display = "block";
-
-        const images = imagesContainer.querySelector("#images");
+        const images = document.querySelector("#images-container #images");
         images.innerHTML = "";
 
         const selects = document.querySelectorAll("#selects .div-select");
-        const discipline = document.getElementById("discipline").value;
+        const name = document.getElementById("name").value;
 
-        [...selects].map((e, index) => {
+        const title = createElementWithProps(
+          "h2",
+          { style: "text-align: center" },
+          `Обовʼязкові елементи - ${name} - ${discipline} - ${category}`
+        );
+        images.appendChild(title);
+
+        selects.forEach((e, index) => {
           const label = e.querySelector("label").innerText;
           const select = e.querySelector("select").value;
 
-          const cont = document.createElement("div");
-          cont.style.marginTop = "20px";
-          cont.classList =
-            "d-flex justify-content-between align-items-center mt-4";
+          const cont = createElementWithProps("div", {
+            classList: "d-flex justify-content-between align-items-center mt-4",
+            style: "margin-top: 20px",
+          });
 
-          const heading = document.createElement("h3");
-          heading.innerText = `${index + 1}. ${label}:`;
+          const heading = createElementWithProps(
+            "h3",
+            {},
+            `${index + 1}. ${label}:`
+          );
+          const contIm = createElementWithProps("div", {
+            style: "text-align: center; font-weight: 500",
+          });
 
-          const contIm = document.createElement("div");
-          contIm.style.textAlign = "center";
-          contIm.style.fontWeight = "500";
+          const codeParagraph = createElementWithProps(
+            "p",
+            {},
+            `Код - ${select}`
+          );
+          const image = createElementWithProps("img", {
+            src: `img/${discipline}/${select}.jpeg`,
+            style: "width: 150px; height: auto",
+          });
 
-          const p = document.createElement("p");
-          p.innerText = `Код - ${select}`;
-
-          const image = document.createElement("img");
-          image.src = `img/${discipline}/${select}.jpeg`;
-          image.style.width = "150px";
-          image.style.height = "auto";
-
+          appendChildren(contIm, codeParagraph, image);
+          appendChildren(cont, heading, contIm);
           images.appendChild(cont);
-          cont.appendChild(heading);
-          cont.appendChild(contIm);
-
-          contIm.appendChild(p);
-          contIm.appendChild(image);
         });
       }
 
@@ -303,38 +398,12 @@
       }
 
       function downloadAsPDF() {
-        hideButtons();
-
-        // Wait for all images to load before continuing
-        const images = document.querySelectorAll("img");
-        let loadedImagesCount = 0;
-
-        images.forEach((img) => {
-          if (img.complete) {
-            loadedImagesCount++;
-          } else {
-            img.onload = () => {
-              loadedImagesCount++;
-              if (loadedImagesCount === images.length) {
-                captureAndGeneratePDF();
-              }
-            };
-          }
+        const { jsPDF } = window.jspdf;
+        html2canvas(document.body).then((canvas) => {
+          let pdf = new jsPDF();
+          pdf.addImage(canvas.toDataURL("image/png"), "PNG", 10, 10, 190, 0);
+          pdf.save("page_screenshot.pdf");
         });
-
-        if (loadedImagesCount === images.length) {
-          captureAndGeneratePDF();
-        }
-
-        function captureAndGeneratePDF() {
-          const { jsPDF } = window.jspdf;
-          html2canvas(document.body).then((canvas) => {
-            showButtons();
-            let pdf = new jsPDF();
-            pdf.addImage(canvas.toDataURL("image/png"), "PNG", 10, 10, 190, 0);
-            pdf.save("page_screenshot.pdf");
-          });
-        }
       }
     </script>
   </body>
