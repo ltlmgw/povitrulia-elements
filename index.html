@@ -16,7 +16,6 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Choices.js -->
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <link
       rel="stylesheet"
@@ -25,6 +24,12 @@
     <style>
       .choices__list--multiple .choices__item {
         background-color: #18336dcf;
+      }
+      h2,
+      h3 {
+        white-space: normal;
+        word-wrap: break-word;
+        text-align: center;
       }
     </style>
   </head>
@@ -36,7 +41,12 @@
         <div class="col-sm-12">
           <div class="mb-3">
             <label class="form-label">Введіть ім&#697;я:</label>
-            <input class="input-group-text w-100" type="text" id="name" />
+            <input
+              class="input-group-text w-100"
+              type="text"
+              id="name"
+              required
+            />
           </div>
           <div class="mb-3">
             <label class="form-label">Виберіть дисципліну:</label>
@@ -98,31 +108,33 @@
     </div>
 
     <div class="container" id="images-container" style="display: none">
-      <div class="col-sm-12">
-        <div id="images"></div>
+      <div class="row">
+        <div class="col-sm-8 mx-auto">
+          <div id="images"></div>
 
-        <div class="text-center">
-          <button
-            class="mt-3 btn btn-primary download-btn mx-auto"
-            onclick="downloadAsImage()"
-          >
-            Завантажити як картинку
-          </button>
-          <button
-            class="mt-3 btn btn-primary download-btn mx-auto"
-            onclick="downloadAsPDF()"
-          >
-            Завантажити PDF
-          </button>
-        </div>
+          <div class="text-center">
+            <button
+              class="mt-3 btn btn-primary download-btn mx-auto"
+              onclick="downloadAsImage()"
+            >
+              Завантажити як картинку
+            </button>
+            <button
+              class="mt-3 btn btn-primary download-btn mx-auto"
+              onclick="downloadAsPDF()"
+            >
+              Завантажити PDF
+            </button>
+          </div>
 
-        <div class="text-center">
-          <button
-            class="mt-3 btn btn-dark download-btn mx-auto"
-            onclick="backToSelection()"
-          >
-            Повернутися до вибору
-          </button>
+          <div class="text-center">
+            <button
+              class="mt-3 btn btn-dark download-btn mx-auto"
+              onclick="backToSelection()"
+            >
+              Повернутися до вибору
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -385,8 +397,9 @@
       }
 
       function downloadAsImage() {
-        hideButtons();
-        html2canvas(document.body, { useCORS: true }).then((canvas) => {
+        const element = document.getElementById("images");
+
+        html2canvas(element, { useCORS: true }).then((canvas) => {
           showButtons();
           let link = document.createElement("a");
           link.href = canvas.toDataURL("image/png");
@@ -397,7 +410,7 @@
 
       function downloadAsPDF() {
         const { jsPDF } = window.jspdf;
-        const element = document.getElementById("images-container");
+        const element = document.getElementById("images");
 
         html2canvas(element, { scale: 2 }).then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
