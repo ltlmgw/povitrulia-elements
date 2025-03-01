@@ -290,8 +290,6 @@
           name: opt_n[k],
         }));
 
-        console.log(opt_arr, "opt_arr");
-
         orderValue.forEach((e) => {
           const currentSel = opt_arr.find((el) => el.k === e);
           if (!currentSel) return;
@@ -392,17 +390,38 @@
           showButtons();
           let link = document.createElement("a");
           link.href = canvas.toDataURL("image/png");
-          link.download = "page_screenshot.png";
+          link.download = `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.png`;
           link.click();
         });
       }
 
       function downloadAsPDF() {
         const { jsPDF } = window.jspdf;
-        html2canvas(document.body).then((canvas) => {
-          let pdf = new jsPDF();
-          pdf.addImage(canvas.toDataURL("image/png"), "PNG", 10, 10, 190, 0);
-          pdf.save("page_screenshot.pdf");
+        const element = document.getElementById("images-container");
+
+        html2canvas(element, { scale: 2 }).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF("p", "mm", "a4");
+          const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+          const imgWidth = pageWidth;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+          if (imgHeight > pdf.internal.pageSize.getHeight() - 20) {
+            pdf.addImage(
+              imgData,
+              "PNG",
+              10,
+              10,
+              imgWidth,
+              pdf.internal.pageSize.getHeight() - 20
+            );
+          } else {
+            pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+          }
+
+          pdf.save(
+            `Обовʼязкові елементи - ${name} - ${discipline} - ${category}`.pdf
+          );
         });
       }
     </script>
