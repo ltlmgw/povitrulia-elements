@@ -38,7 +38,7 @@
       <h2 class="mb-4 text-center">Обов&#697;язкові елементи</h2>
 
       <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-8 mx-auto">
           <div class="mb-3">
             <label class="form-label">Введіть ім&#697;я:</label>
             <input
@@ -87,7 +87,7 @@
         </div>
 
         <div
-          class="col-sm-12"
+          class="col-sm-8 mx-auto"
           id="secondarySelectContainer"
           style="display: none"
         >
@@ -387,6 +387,14 @@
       function downloadAsImage() {
         const element = document.getElementById("images");
 
+        html2canvas(node, {
+          onclone: (document) => {
+            fonts.forEach((font) => {
+              document.fonts.add(font);
+            });
+          },
+        });
+
         html2canvas(element, { useCORS: true }).then((canvas) => {
           showButtons();
           let link = document.createElement("a");
@@ -400,7 +408,17 @@
         const { jsPDF } = window.jspdf;
         const element = document.getElementById("images");
 
-        html2canvas(element, { scale: 1 }).then((canvas) => {
+        const fonts = document.fonts;
+
+        html2canvas(node, {
+          onclone: (document) => {
+            fonts.forEach((font) => {
+              document.fonts.add(font);
+            });
+          },
+        });
+
+        html2canvas(element, { scale: 2 }).then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
           const pdf = new jsPDF("p", "mm", "a4");
           const pageWidth = pdf.internal.pageSize.getWidth() - 20;
