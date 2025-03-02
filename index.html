@@ -385,7 +385,6 @@
         const element = document.getElementById("images");
 
         html2canvas(element, { useCORS: true }).then((canvas) => {
-          showButtons();
           let link = document.createElement("a");
           link.href = canvas.toDataURL("image/png");
           link.download = `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.png`;
