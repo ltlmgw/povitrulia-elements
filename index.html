@@ -389,7 +389,7 @@
 
         name = nameSelect.value;
 
-        html2canvas(imagesContainerMain, { useCORS: true }).then((canvas) => {
+        html2canvas(element, { useCORS: true }).then((canvas) => {
           let link = document.createElement("a");
           link.href = canvas.toDataURL("image/png");
           link.download = `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.png`;
