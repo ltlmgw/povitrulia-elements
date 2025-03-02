@@ -384,18 +384,6 @@
         imagesContainer.style.display = "none";
       }
 
-      function hideButtons() {
-        document
-          .querySelectorAll(".download-btn")
-          .forEach((btn) => (btn.style.display = "none"));
-      }
-
-      function showButtons() {
-        document
-          .querySelectorAll(".download-btn")
-          .forEach((btn) => (btn.style.display = "inline-block"));
-      }
-
       function downloadAsImage() {
         const element = document.getElementById("images");
 
@@ -412,7 +400,7 @@
         const { jsPDF } = window.jspdf;
         const element = document.getElementById("images");
 
-        html2canvas(element, { scale: 2 }).then((canvas) => {
+        html2canvas(element, { scale: 1 }).then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
           const pdf = new jsPDF("p", "mm", "a4");
           const pageWidth = pdf.internal.pageSize.getWidth() - 20;
@@ -433,7 +421,7 @@
           }
 
           pdf.save(
-            `Обовʼязкові елементи - ${name} - ${discipline} - ${category}`.pdf
+            `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.pdf`
           );
         });
       }
