@@ -141,9 +141,11 @@
       const disciplineSelect = document.getElementById("discipline");
       const categorySelect = document.getElementById("category");
       const selectsContainer = document.getElementById("selects");
+      const nameSelect = document.getElementById("name").value;
 
       let discipline = disciplineSelect.value;
       let category = categorySelect.value;
+      let name = nameSelect.value;
 
       const cat = {
         debut: "Д",
@@ -331,7 +333,7 @@
         images.innerHTML = "";
 
         const selects = document.querySelectorAll("#selects .div-select");
-        const name = document.getElementById("name").value;
+        name = nameSelect.value;
 
         const title = createElementWithProps(
           "h2",
@@ -385,7 +387,9 @@
       function downloadAsImage() {
         const element = document.getElementById("images");
 
-        html2canvas(element, { useCORS: true }).then((canvas) => {
+        name = nameSelect.value;
+
+        html2canvas(imagesContainerMain, { useCORS: true }).then((canvas) => {
           let link = document.createElement("a");
           link.href = canvas.toDataURL("image/png");
           link.download = `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.png`;
@@ -396,6 +400,8 @@
       function downloadAsPDF() {
         const { jsPDF } = window.jspdf;
         const element = document.getElementById("images");
+
+        name = nameSelect.value;
 
         html2canvas(element, { scale: 2 }).then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
