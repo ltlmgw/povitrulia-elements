@@ -22,14 +22,11 @@
       href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
     />
     <style>
+      * {
+        word-break: break-all;
+      }
       .choices__list--multiple .choices__item {
         background-color: #18336dcf;
-      }
-      h2,
-      h3 {
-        white-space: normal;
-        word-wrap: break-word;
-        text-align: center;
       }
     </style>
   </head>
@@ -387,14 +384,6 @@
       function downloadAsImage() {
         const element = document.getElementById("images");
 
-        html2canvas(element, {
-          onclone: (document) => {
-            fonts.forEach((font) => {
-              document.fonts.add(font);
-            });
-          },
-        });
-
         html2canvas(element, { useCORS: true }).then((canvas) => {
           showButtons();
           let link = document.createElement("a");
@@ -407,16 +396,6 @@
       function downloadAsPDF() {
         const { jsPDF } = window.jspdf;
         const element = document.getElementById("images");
-
-        const fonts = document.fonts;
-
-        html2canvas(element, {
-          onclone: (document) => {
-            fonts.forEach((font) => {
-              document.fonts.add(font);
-            });
-          },
-        });
 
         html2canvas(element, { scale: 2 }).then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
