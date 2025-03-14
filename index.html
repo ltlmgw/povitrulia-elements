@@ -54,7 +54,7 @@
               onchange="onDisChange()"
             >
               <option value="pole">Pole Sport</option>
-              <option value="loop">Loop Sport</option>
+              <option value="hoop">Hoop Sport</option>
               <option value="silks">Aerial Silks Sport</option>
             </select>
           </div>
@@ -107,7 +107,7 @@
 
     <div class="container" id="images-container" style="display: none">
       <div class="row">
-        <div class="col-sm-8 mx-auto">
+        <div class="col-sm-12 mx-auto">
           <div id="images" style="padding: 20px"></div>
 
           <div class="text-center">
@@ -183,19 +183,19 @@
 
       const prop = {
         pole: opt_pole,
-        loop: opt_not_pole,
+        hoop: opt_not_pole,
         silks: opt_not_pole,
       };
 
       const prop_l = {
         pole: opt_n_pole,
-        loop: opt_n_note_pole,
+        hoop: opt_n_note_pole,
         silks: opt_n_note_pole,
       };
 
       const num = {
         pole: [1, 2, 3],
-        loop: [1, 2, 3],
+        hoop: [1, 2, 3],
         silks: [1, 2],
       };
 
@@ -279,8 +279,8 @@
             opt
           );
           const image = createElementWithProps("img", {
-            src: `img/${discipline}/${opt}.jpeg`,
-            style: "width: 150px; height: auto",
+            src: `img/${discipline}/${opt}.png`,
+            style: "width: 100%; height: auto",
           });
 
           appendChildren(imgInfo, code, image);
@@ -352,7 +352,7 @@
           });
 
           const heading = createElementWithProps(
-            "h3",
+            "h6",
             {},
             `${index + 1}. ${label}:`
           );
@@ -366,8 +366,8 @@
             `Код - ${select}`
           );
           const image = createElementWithProps("img", {
-            src: `img/${discipline}/${select}.jpeg`,
-            style: "width: 150px; height: auto",
+            src: `img/${discipline}/${select}.png`,
+            style: "width: 400px; height: auto",
           });
 
           appendChildren(contIm, codeParagraph, image);
