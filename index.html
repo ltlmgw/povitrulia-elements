@@ -368,7 +368,7 @@
           const image = createElementWithProps("img", {
             src: `img/${discipline}/${select}.png`,
             style:
-              "max-width: 650px; width: 100%; height: auto; margin-bottom:  60px",
+              "max-width: 400px; width: 100%; height: auto; margin-bottom:  60px",
           });
 
           appendChildren(contIm, codeParagraph, image);
@@ -406,62 +406,22 @@
 
         html2canvas(element, { scale: 2 }).then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
-
-          // A4 page size in mm
           const pdf = new jsPDF("p", "mm", "a4");
-          const pageWidth = 210;
-          const pageHeight = 297;
-          const margin = 10;
-
-          // Convert canvas dimensions to A4 scale
-          const imgWidth = pageWidth - 2 * margin;
+          const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+          const imgWidth = pageWidth;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-          let position = margin; // Initial Y position
-
-          if (imgHeight > pageHeight - 2 * margin) {
-            // Multi-page handling
-            let currentHeight = 0;
-
-            while (currentHeight < canvas.height) {
-              const cropCanvas = document.createElement("canvas");
-              const ctx = cropCanvas.getContext("2d");
-
-              cropCanvas.width = canvas.width;
-              cropCanvas.height =
-                (canvas.width / imgWidth) * (pageHeight - 2 * margin);
-
-              ctx.drawImage(
-                canvas,
-                0,
-                currentHeight,
-                cropCanvas.width,
-                cropCanvas.height,
-                0,
-                0,
-                cropCanvas.width,
-                cropCanvas.height
-              );
-
-              const croppedImgData = cropCanvas.toDataURL("image/png");
-              pdf.addImage(
-                croppedImgData,
-                "PNG",
-                margin,
-                position,
-                imgWidth,
-                pageHeight - 2 * margin
-              );
-
-              currentHeight += cropCanvas.height;
-
-              if (currentHeight < canvas.height) {
-                pdf.addPage();
-              }
-            }
+          if (imgHeight > pdf.internal.pageSize.getHeight() - 20) {
+            pdf.addImage(
+              imgData,
+              "PNG",
+              10,
+              10,
+              imgWidth,
+              pdf.internal.pageSize.getHeight() - 20
+            );
           } else {
-            // Single-page PDF
-            pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+            pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
           }
 
           pdf.save(
