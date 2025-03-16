@@ -347,13 +347,13 @@
           const select = e.querySelector("select").value;
 
           const cont = createElementWithProps("div", {
-            classList: "d-flex justify-content-between align-items-center mt-4",
+            classList: "text-center mt-4",
             style: "margin-top: 20px",
           });
 
           const heading = createElementWithProps(
-            "h6",
-            {},
+            "h5",
+            { style: "font-weight: 600" },
             `${index + 1}. ${label}:`
           );
           const contIm = createElementWithProps("div", {
@@ -367,7 +367,8 @@
           );
           const image = createElementWithProps("img", {
             src: `img/${discipline}/${select}.png`,
-            style: "width: 650px; height: auto",
+            style:
+              "max-width: 650px; width: 100%; height: auto; margin-bottom:  60px",
           });
 
           appendChildren(contIm, codeParagraph, image);
