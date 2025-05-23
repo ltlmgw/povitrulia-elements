@@ -392,12 +392,10 @@
         const a4WidthPx = 2480;
         const a4HeightPx = 3508;
 
-        // Зберігаємо поточні стилі
         const originalTransform = element.style.transform;
         const originalOrigin = element.style.transformOrigin;
 
-        // Масштабуємо під A4
-        const scale = 1.5;
+        const scale = 1.8;
         element.style.transform = `scale(${scale})`;
         element.style.transformOrigin = "top right";
 
@@ -433,19 +431,17 @@
             link.download = `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.png`;
             link.click();
           });
-        }, 100); // Затримка для оновлення DOM
+        }, 100);
       }
 
       function downloadAsPDF() {
         const { jsPDF } = window.jspdf;
         const element = document.getElementById("images");
 
-        // Зберігаємо поточні стилі
         const originalTransform = element.style.transform;
         const originalOrigin = element.style.transformOrigin;
 
-        // Масштабуємо під A4
-        const scale = 1.5;
+        const scale = 1.8;
         element.style.transform = `scale(${scale})`;
         element.style.transformOrigin = "top right";
 
@@ -495,7 +491,7 @@
             pdf.save(
               `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.pdf`
             );
-          }, 100); // Затримка для оновлення DOM
+          }, 100);
         });
       }
     </script>
