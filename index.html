@@ -389,22 +389,31 @@
         const element = document.getElementById("images");
         const name = nameSelect.value;
 
+        const a4WidthPx = 2480;
+        const a4HeightPx = 3508;
+
         html2canvas(element, {
           useCORS: true,
           allowTaint: true,
-          scale: window.devicePixelRatio || 2, // динамічний scale для щільності пікселів
+          width: a4WidthPx,
+          height: a4HeightPx,
+          scale: 1,
+          backgroundColor: "#ffffff",
         }).then((canvas) => {
           const outputCanvas = document.createElement("canvas");
+          outputCanvas.width = a4WidthPx;
+          outputCanvas.height = a4HeightPx;
           const context = outputCanvas.getContext("2d");
 
-          const targetWidth = 1240;
-          const aspectRatio = canvas.height / canvas.width;
-          const targetHeight = targetWidth * aspectRatio;
-
-          outputCanvas.width = targetWidth;
-          outputCanvas.height = targetHeight;
-
-          context.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
+          context.drawImage(
+            canvas,
+            0,
+            0,
+            outputCanvas.width,
+            outputCanvas.height
+          );
 
           const link = document.createElement("a");
           link.href = outputCanvas.toDataURL("image/png");
@@ -420,9 +429,12 @@
         name = nameSelect.value;
 
         html2canvas(element, {
-          scale: 2,
           useCORS: true,
           allowTaint: true,
+          backgroundColor: "#ffffff",
+          scale: 1,
+          width: 2480,
+          height: 3508,
         }).then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
 
@@ -431,7 +443,6 @@
           const pageHeight = pdf.internal.pageSize.getHeight();
           const margin = 10;
 
-          const pxToMm = (px) => (px * 25.4) / 96;
           const imgWidth = pageWidth - 2 * margin;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
