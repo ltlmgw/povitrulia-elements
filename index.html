@@ -392,11 +392,15 @@
         const a4WidthPx = 2480;
         const a4HeightPx = 3508;
 
-        const height = element.getBoundingClientRect().height;
-        const width = element.getBoundingClientRect().width;
+        // Зберігаємо поточні стилі
+        const originalTransform = element.style.transform;
+        const originalOrigin = element.style.transformOrigin;
 
-        element.style.width = `${width * 2}px`;
-        element.style.height = `${height * 2}px`;
+        // Масштабуємо під A4
+        const scale = 1.5;
+        element.style.transform = `scale(${scale})`;
+        element.style.transformOrigin = "top left";
+
         setTimeout(() => {
           html2canvas(element, {
             useCORS: true,
@@ -406,8 +410,8 @@
             scale: 1,
             backgroundColor: "#ffffff",
           }).then((canvas) => {
-            element.style.width = width;
-            element.style.height = height;
+            element.style.transform = originalTransform;
+            element.style.transformOrigin = originalOrigin;
 
             const outputCanvas = document.createElement("canvas");
             outputCanvas.width = a4WidthPx;
@@ -436,11 +440,14 @@
         const { jsPDF } = window.jspdf;
         const element = document.getElementById("images");
 
-        const height = element.getBoundingClientRect().height;
-        const width = element.getBoundingClientRect().width;
+        // Зберігаємо поточні стилі
+        const originalTransform = element.style.transform;
+        const originalOrigin = element.style.transformOrigin;
 
-        element.style.width = `${width * 2}px`;
-        element.style.height = `${height * 2}px`;
+        // Масштабуємо під A4
+        const scale = 1.5;
+        element.style.transform = `scale(${scale})`;
+        element.style.transformOrigin = "top left";
 
         name = nameSelect.value;
         setTimeout(() => {
@@ -452,8 +459,8 @@
             width: 2480,
             height: 3508,
           }).then((canvas) => {
-            element.style.width = width;
-            element.style.height = height;
+            element.style.transform = originalTransform;
+            element.style.transformOrigin = originalOrigin;
 
             const imgData = canvas.toDataURL("image/png");
 
