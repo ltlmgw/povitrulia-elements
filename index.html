@@ -395,9 +395,9 @@
         const originalTransform = element.style.transform;
         const originalOrigin = element.style.transformOrigin;
 
-        const scale = 1.8;
+        const scale = 2;
         element.style.transform = `scale(${scale})`;
-        element.style.transformOrigin = "top right";
+        element.style.transformOrigin = "top center";
 
         setTimeout(() => {
           html2canvas(element, {
@@ -441,9 +441,9 @@
         const originalTransform = element.style.transform;
         const originalOrigin = element.style.transformOrigin;
 
-        const scale = 1.8;
+        const scale = 2;
         element.style.transform = `scale(${scale})`;
-        element.style.transformOrigin = "top right";
+        element.style.transformOrigin = "top center";
 
         name = nameSelect.value;
         setTimeout(() => {
