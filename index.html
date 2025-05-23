@@ -392,20 +392,26 @@
         const a4WidthPx = 2480;
         const a4HeightPx = 3508;
 
-        const height = element.getBoundingClientRect().height * 2;
-        const width = element.getBoundingClientRect().width * 2;
+        const height = element.getBoundingClientRect().height;
+        const width = element.getBoundingClientRect().width;
+
+        element.style.width = `${width * 2}px`;
+        element.style.height = `${height * 2}px`;
 
         html2canvas(element, {
           useCORS: true,
           allowTaint: true,
-          width: width,
-          height: height,
+          width: a4WidthPx,
+          height: a4HeightPx,
           scale: 1,
           backgroundColor: "#ffffff",
         }).then((canvas) => {
+          element.style.width = width;
+          element.style.height = height;
+
           const outputCanvas = document.createElement("canvas");
-          outputCanvas.width = width;
-          outputCanvas.height = height;
+          outputCanvas.width = a4WidthPx;
+          outputCanvas.height = a4HeightPx;
           const context = outputCanvas.getContext("2d");
 
           context.fillStyle = "#ffffff";
@@ -429,6 +435,12 @@
         const { jsPDF } = window.jspdf;
         const element = document.getElementById("images");
 
+        const height = element.getBoundingClientRect().height;
+        const width = element.getBoundingClientRect().width;
+
+        element.style.width = `${width * 2}px`;
+        element.style.height = `${height * 2}px`;
+
         name = nameSelect.value;
 
         html2canvas(element, {
@@ -439,6 +451,9 @@
           width: 2480,
           height: 3508,
         }).then((canvas) => {
+          element.style.width = width;
+          element.style.height = height;
+
           const imgData = canvas.toDataURL("image/png");
 
           const pdf = new jsPDF("p", "mm", "a4");
