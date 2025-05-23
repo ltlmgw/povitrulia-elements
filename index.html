@@ -387,12 +387,27 @@
 
       function downloadAsImage() {
         const element = document.getElementById("images");
+        const name = nameSelect.value;
 
-        name = nameSelect.value;
+        html2canvas(element, {
+          useCORS: true,
+          allowTaint: true,
+          scale: window.devicePixelRatio || 2, // динамічний scale для щільності пікселів
+        }).then((canvas) => {
+          const outputCanvas = document.createElement("canvas");
+          const context = outputCanvas.getContext("2d");
 
-        html2canvas(element, { useCORS: true, scale: 2 }).then((canvas) => {
-          let link = document.createElement("a");
-          link.href = canvas.toDataURL("image/png");
+          const targetWidth = 1240;
+          const aspectRatio = canvas.height / canvas.width;
+          const targetHeight = targetWidth * aspectRatio;
+
+          outputCanvas.width = targetWidth;
+          outputCanvas.height = targetHeight;
+
+          context.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+
+          const link = document.createElement("a");
+          link.href = outputCanvas.toDataURL("image/png");
           link.download = `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.png`;
           link.click();
         });
@@ -404,24 +419,33 @@
 
         name = nameSelect.value;
 
-        html2canvas(element, { scale: 2 }).then((canvas) => {
+        html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+        }).then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
+
           const pdf = new jsPDF("p", "mm", "a4");
-          const pageWidth = pdf.internal.pageSize.getWidth() - 20;
-          const imgWidth = pageWidth;
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+          const margin = 10;
+
+          const pxToMm = (px) => (px * 25.4) / 96;
+          const imgWidth = pageWidth - 2 * margin;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-          if (imgHeight > pdf.internal.pageSize.getHeight() - 20) {
-            pdf.addImage(
-              imgData,
-              "PNG",
-              10,
-              10,
-              imgWidth,
-              pdf.internal.pageSize.getHeight() - 20
-            );
-          } else {
-            pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+          let heightLeft = imgHeight;
+          let position = margin;
+
+          pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight - 2 * margin;
+
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight + margin;
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight - 2 * margin;
           }
 
           pdf.save(
