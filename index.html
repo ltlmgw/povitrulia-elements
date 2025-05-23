@@ -397,38 +397,39 @@
 
         element.style.width = `${width * 2}px`;
         element.style.height = `${height * 2}px`;
+        setTimeout(() => {
+          html2canvas(element, {
+            useCORS: true,
+            allowTaint: true,
+            width: a4WidthPx,
+            height: a4HeightPx,
+            scale: 1,
+            backgroundColor: "#ffffff",
+          }).then((canvas) => {
+            element.style.width = width;
+            element.style.height = height;
 
-        html2canvas(element, {
-          useCORS: true,
-          allowTaint: true,
-          width: a4WidthPx,
-          height: a4HeightPx,
-          scale: 1,
-          backgroundColor: "#ffffff",
-        }).then((canvas) => {
-          element.style.width = width;
-          element.style.height = height;
+            const outputCanvas = document.createElement("canvas");
+            outputCanvas.width = a4WidthPx;
+            outputCanvas.height = a4HeightPx;
+            const context = outputCanvas.getContext("2d");
 
-          const outputCanvas = document.createElement("canvas");
-          outputCanvas.width = a4WidthPx;
-          outputCanvas.height = a4HeightPx;
-          const context = outputCanvas.getContext("2d");
+            context.fillStyle = "#ffffff";
+            context.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
+            context.drawImage(
+              canvas,
+              0,
+              0,
+              outputCanvas.width,
+              outputCanvas.height
+            );
 
-          context.fillStyle = "#ffffff";
-          context.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
-          context.drawImage(
-            canvas,
-            0,
-            0,
-            outputCanvas.width,
-            outputCanvas.height
-          );
-
-          const link = document.createElement("a");
-          link.href = outputCanvas.toDataURL("image/png");
-          link.download = `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.png`;
-          link.click();
-        });
+            const link = document.createElement("a");
+            link.href = outputCanvas.toDataURL("image/png");
+            link.download = `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.png`;
+            link.click();
+          });
+        }, 100); // Затримка для оновлення DOM
       }
 
       function downloadAsPDF() {
@@ -442,44 +443,52 @@
         element.style.height = `${height * 2}px`;
 
         name = nameSelect.value;
+        setTimeout(() => {
+          html2canvas(element, {
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: "#ffffff",
+            scale: 1,
+            width: 2480,
+            height: 3508,
+          }).then((canvas) => {
+            element.style.width = width;
+            element.style.height = height;
 
-        html2canvas(element, {
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#ffffff",
-          scale: 1,
-          width: 2480,
-          height: 3508,
-        }).then((canvas) => {
-          element.style.width = width;
-          element.style.height = height;
+            const imgData = canvas.toDataURL("image/png");
 
-          const imgData = canvas.toDataURL("image/png");
+            const pdf = new jsPDF("p", "mm", "a4");
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const margin = 10;
 
-          const pdf = new jsPDF("p", "mm", "a4");
-          const pageWidth = pdf.internal.pageSize.getWidth();
-          const pageHeight = pdf.internal.pageSize.getHeight();
-          const margin = 10;
+            const imgWidth = pageWidth - 2 * margin;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-          const imgWidth = pageWidth - 2 * margin;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+            let position = margin;
 
-          let heightLeft = imgHeight;
-          let position = margin;
-
-          pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight - 2 * margin;
-
-          while (heightLeft > 0) {
-            position = heightLeft - imgHeight + margin;
-            pdf.addPage();
             pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
             heightLeft -= pageHeight - 2 * margin;
-          }
 
-          pdf.save(
-            `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.pdf`
-          );
+            while (heightLeft > 0) {
+              position = heightLeft - imgHeight + margin;
+              pdf.addPage();
+              pdf.addImage(
+                imgData,
+                "PNG",
+                margin,
+                position,
+                imgWidth,
+                imgHeight
+              );
+              heightLeft -= pageHeight - 2 * margin;
+            }
+
+            pdf.save(
+              `Обовʼязкові елементи - ${name} - ${discipline} - ${category}.pdf`
+            );
+          }, 100); // Затримка для оновлення DOM
         });
       }
     </script>
