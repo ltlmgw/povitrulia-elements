@@ -392,6 +392,9 @@
         const a4WidthPx = 2480;
         const a4HeightPx = 3508;
 
+        const height = element.getBoundingClientRect().height;
+        const width = element.getBoundingClientRect().width;
+
         html2canvas(element, {
           useCORS: true,
           allowTaint: true,
@@ -401,8 +404,8 @@
           backgroundColor: "#ffffff",
         }).then((canvas) => {
           const outputCanvas = document.createElement("canvas");
-          outputCanvas.width = a4WidthPx;
-          outputCanvas.height = a4HeightPx;
+          outputCanvas.width = width;
+          outputCanvas.height = height;
           const context = outputCanvas.getContext("2d");
 
           context.fillStyle = "#ffffff";
